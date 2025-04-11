@@ -386,7 +386,7 @@ while($row = $seatResult->fetch_assoc()) {
     <div class="container">
         <header>
             <div class="header-content">
-                <h1>Trip Pilot | Dashboard</h1>
+                <h1></h1>
                 <div class="user-info">
                     <div class="user-avatar">TP</div>
                     <span>PowerPuff (Admin)</span>
