@@ -356,8 +356,8 @@ while($row = $seatResult->fetch_assoc()) {
             <div class="header-content">
                 <h1>Bus Terminal Management Dashboard</h1>
                 <div class="user-info">
-                    <div class="user-avatar">CM</div>
-                    <span>Carlos Morales (Admin)</span>
+                    <div class="user-avatar">PF</div>
+                    <span>PowerPuff (Admin)</span>
                 </div>
             </div>
         </header>
