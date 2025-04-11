@@ -30,19 +30,30 @@ $passengerQuery = "SELECT COUNT(*) as count FROM tblpassenger";
 $passengerResult = $connection->query($passengerQuery);
 $passengerCount = $passengerResult->fetch_assoc()['count'];
 
-// Fetch employee data
+// Fetch employee data with types
 $employeeQuery = "SELECT COUNT(*) as count FROM tblemployee";
 $employeeResult = $connection->query($employeeQuery);
 $employeeCount = $employeeResult->fetch_assoc()['count'];
 
-// Fetch seat data
+// Fetch driver count
+$driverQuery = "SELECT COUNT(*) as count FROM tbldriver";
+$driverResult = $connection->query($driverQuery);
+$driverCount = $driverResult->fetch_assoc()['count'];
+
+// Fetch conductor count
+$conductorQuery = "SELECT COUNT(*) as count FROM tblconductor";
+$conductorResult = $connection->query($conductorQuery);
+$conductorCount = $conductorResult->fetch_assoc()['count'];
+
+// Fetch seat data with better handling for buses without seat records
 $seatQuery = "SELECT 
                 b.plateNo, 
+                b.busID,
                 COUNT(s.seatID) as totalSeats,
                 SUM(CASE WHEN s.isAvailable = 1 THEN 1 ELSE 0 END) as availableSeats
-              FROM tblseat s
-              JOIN tblbus b ON s.busID = b.busID
-              GROUP BY b.plateNo";
+              FROM tblbus b
+              LEFT JOIN tblseat s ON s.busID = b.busID
+              GROUP BY b.plateNo, b.busID";
 $seatResult = $connection->query($seatQuery);
 $seatData = [];
 $plateNos = [];
@@ -52,8 +63,10 @@ $occupiedSeats = [];
 while($row = $seatResult->fetch_assoc()) {
     $seatData[] = $row;
     $plateNos[] = $row['plateNo'];
-    $availableSeats[] = $row['availableSeats'];
-    $occupiedSeats[] = $row['totalSeats'] - $row['availableSeats'];
+    // Handle case where bus might not have seats yet
+    $totalSeats = $row['totalSeats'] ?: 0;
+    $availableSeats[] = $row['availableSeats'] ?: 0;
+    $occupiedSeats[] = $totalSeats - ($row['availableSeats'] ?: 0);
 }
 ?>
 
@@ -62,14 +75,17 @@ while($row = $seatResult->fetch_assoc()) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bus Terminal Dashboard</title>
+    <title>Trip Pilot | Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --navy: #0a316c;
-            --orange: #e77a2c;
-            --yellow: #fcc931;
             --blue: #1765c0;
+            --yellow: #e9ad10;
+            --light-yellow: #f0b732;
+            --light-blue: #4773b5;
             --light-gray: #cad3da;
         }
         
@@ -77,7 +93,7 @@ while($row = $seatResult->fetch_assoc()) {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            font-family: 'Poppins', sans-serif;
         }
         
         body {
@@ -98,6 +114,11 @@ while($row = $seatResult->fetch_assoc()) {
             margin-bottom: 30px;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            background-image: url('header_photo.png');
+            background-size: cover;
+            background-position: center;
+            height: 150px;
+            border-bottom: 20px solid var(--navy);
         }
         
         .header-content {
@@ -122,11 +143,11 @@ while($row = $seatResult->fetch_assoc()) {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background-color: var(--orange);
+            background-color: var(--yellow);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: var(--navy);
             font-weight: bold;
         }
         
@@ -175,7 +196,7 @@ while($row = $seatResult->fetch_assoc()) {
         }
         
         .buses { background-color: rgba(10, 49, 108, 0.1); color: var(--navy); }
-        .terminals { background-color: rgba(231, 122, 44, 0.1); color: var(--orange); }
+        .terminals { background-color: rgba(231, 122, 44, 0.1); color: var(--light-blue); }
         .passengers { background-color: rgba(252, 201, 49, 0.1); color: var(--yellow); }
         .employees { background-color: rgba(23, 101, 192, 0.1); color: var(--blue); }
         
@@ -327,6 +348,17 @@ while($row = $seatResult->fetch_assoc()) {
             height: auto !important;
         }
         
+        footer {
+            background-color: var(--navy);
+            color: white;
+            text-align: left;
+            padding: 10px 20px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            font-size: 14px;
+        }
+        
         @media (max-width: 1200px) {
             .dashboard-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -354,9 +386,9 @@ while($row = $seatResult->fetch_assoc()) {
     <div class="container">
         <header>
             <div class="header-content">
-                <h1>Bus Terminal Management Dashboard</h1>
+                <h1>Trip Pilot | Dashboard</h1>
                 <div class="user-info">
-                    <div class="user-avatar">PF</div>
+                    <div class="user-avatar">TP</div>
                     <span>PowerPuff (Admin)</span>
                 </div>
             </div>
@@ -404,7 +436,7 @@ while($row = $seatResult->fetch_assoc()) {
                 </div>
                 <div class="card-title">Employees</div>
                 <div class="card-value"><?php echo $employeeCount; ?></div>
-                <div class="card-change">On duty</div>
+                <div class="card-change">Drivers: <?php echo $driverCount; ?>, Conductors: <?php echo $conductorCount; ?></div>
             </div>
         </div>
         
@@ -428,7 +460,7 @@ while($row = $seatResult->fetch_assoc()) {
         <div class="main-content">
             <div class="panel">
                 <div class="panel-header">
-                    <div class="panel-title">Active Buses</div>
+                    <div class="panel-title">Bus Information</div>
                     <a href="#" class="view-all">View All</a>
                 </div>
                 
@@ -488,6 +520,10 @@ while($row = $seatResult->fetch_assoc()) {
             </div>
         </div>
     </div>
+
+    <footer>
+        Sheena Mae Jaquez || Joana Carla Gako || Zendy Mariel Dy || BSCS - 2
+    </footer>
 
     <script>
         // Bus Status Chart
