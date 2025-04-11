@@ -50,18 +50,18 @@
 
         /* Main content */
         .content {
-            text-align: center;
-            padding: 40px 20px;
-        }
+	    text-align: center;
+	    padding: 40px 20px 10px; /* Reduced bottom padding from 40px to 10px */
+	}
 
         /* Sections */
         .outsideContainer {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            padding: 50px 0;
-        }
+	    display: flex;
+	    flex-direction: column;
+	    align-items: center;
+	    width: 100%;
+	    padding: 30px 0; /* Reduced from 50px to 30px */
+	}
 
         .container {
             width: 80%;
