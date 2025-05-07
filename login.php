@@ -46,9 +46,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
                 }
             }
             
-            // Redirect to appropriate dashboard
-            $redirect_page = ($_SESSION['user_type'] == 'passenger') ? 'passenger_dash.php' : 'employee_dash.php';
-            header("Location: $redirect_page");
+            // Check for redirect parameter
+            $redirect = isset($_GET['redirect']) ? $_GET['redirect'] : '';
+            
+            // Redirect to appropriate page
+            if (!empty($redirect)) {
+                header("Location: $redirect");
+            } else {
+                $redirect_page = ($_SESSION['user_type'] == 'passenger') ? 'passenger_dash.php' : 'employee_dash.php';
+                header("Location: $redirect_page");
+            }
             exit();
         } else {
             $login_error = "Invalid username or password";
