@@ -36,11 +36,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
                 $stmt->bind_param("i", $user['user_id']);
                 $stmt->execute();
                 $role_result = $stmt->get_result();
-                $_SESSION['role'] = $role_result->fetch_assoc()['role'];
+                $role_data = $role_result->fetch_assoc();
+                $_SESSION['role'] = $role_data['role'];
+                
+                // Redirect admin to admin dashboard
+                if ($_SESSION['role'] == 'admin') {
+                    header("Location: admin_dash.php");
+                    exit();
+                }
             }
             
-            // Redirect to dashboard
-            header("Location: dashboard.php");
+            // Redirect to appropriate dashboard
+            $redirect_page = ($_SESSION['user_type'] == 'passenger') ? 'passenger_dash.php' : 'employee_dash.php';
+            header("Location: $redirect_page");
             exit();
         } else {
             $login_error = "Invalid username or password";
