@@ -8,49 +8,73 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'employee' || $_S
     exit();
 }
 
+// Fetch all employees for the list
+$employees = [];
+$result = $connection->query("
+    SELECT u.user_id, u.username, u.email, e.role, e.employee_number, e.hire_date 
+    FROM users u
+    JOIN employees e ON u.user_id = e.user_id
+    WHERE u.user_type = 'employee'
+    ORDER BY e.hire_date DESC
+");
+if ($result) {
+    $employees = $result->fetch_all(MYSQLI_ASSOC);
+}
+
 // Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['create_employee'])) {
         // Create new employee
-        $username = $conn->real_escape_string($_POST['username']);
-        $email = $conn->real_escape_string($_POST['email']);
-        $first_name = $conn->real_escape_string($_POST['first_name']);
-        $last_name = $conn->real_escape_string($_POST['last_name']);
-        $role = $conn->real_escape_string($_POST['role']);
-        $employee_number = $conn->real_escape_string($_POST['employee_number']);
+        $username = $connection->real_escape_string($_POST['username']);
+        $email = $connection->real_escape_string($_POST['email']);
+        $first_name = $connection->real_escape_string($_POST['first_name']);
+        $last_name = $connection->real_escape_string($_POST['last_name']);
+        $role = $connection->real_escape_string($_POST['role']);
+        $employee_number = $connection->real_escape_string($_POST['employee_number']);
 
         // Start transaction
-        $conn->begin_transaction();
+        $connection->begin_transaction();
 
         try {
             // First insert to get the user_id
-            $stmt = $conn->prepare("INSERT INTO users (username, email, user_type) VALUES (?, ?, 'employee')");
+            $stmt = $connection->prepare("INSERT INTO users (username, email, user_type) VALUES (?, ?, 'employee')");
             $stmt->bind_param("ss", $username, $email);
             $stmt->execute();
-            $user_id = $conn->insert_id;
+            $user_id = $connection->insert_id;
             
             // Use the user_id as the temporary password
             $hashed_password = password_hash($user_id, PASSWORD_DEFAULT);
             
             // Update the user record with the hashed password
-            $stmt = $conn->prepare("UPDATE users SET password = ? WHERE user_id = ?");
+            $stmt = $connection->prepare("UPDATE users SET password = ? WHERE user_id = ?");
             $stmt->bind_param("si", $hashed_password, $user_id);
             $stmt->execute();
 
             // Insert into employees table
-            $stmt = $conn->prepare("INSERT INTO employees (user_id, role, employee_number, hire_date) VALUES (?, ?, ?, CURDATE())");
+            $stmt = $connection->prepare("INSERT INTO employees (user_id, role, employee_number, hire_date) VALUES (?, ?, ?, CURDATE())");
             $stmt->bind_param("iss", $user_id, $role, $employee_number);
             $stmt->execute();
 
-            $conn->commit();
+            $connection->commit();
             $success_message = "Employee created successfully! Temporary password: $user_id";
+            
+            // Refresh employee list after creation
+            $result = $connection->query("
+                SELECT u.user_id, u.username, u.email, e.role, e.employee_number, e.hire_date 
+                FROM users u
+                JOIN employees e ON u.user_id = e.user_id
+                WHERE u.user_type = 'employee'
+                ORDER BY e.hire_date DESC
+            ");
+            if ($result) {
+                $employees = $result->fetch_all(MYSQLI_ASSOC);
+            }
         } catch (Exception $e) {
-            $conn->rollback();
+            $connection->rollback();
             $error_message = "Error creating employee: " . $e->getMessage();
         }
     }
 }
-
 ?>
 
 <!DOCTYPE html>
