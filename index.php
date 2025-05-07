@@ -746,7 +746,11 @@
             <h1>Your Journey,<br>Your Comfort</h1>
             <p>Book your bus tickets online with Trip Pilot - the smart way to travel with real-time tracking and hassle-free experience.</p>
             <div class="hero-buttons">
-                <a href="#booking" class="primary-btn"><i class="fas fa-ticket-alt"></i> Book Now</a>
+                <?php if(isset($_SESSION['user_id'])): ?>
+                <a href="book.php" class="primary-btn"><i class="fas fa-ticket-alt"></i> Book Now</a>
+                <?php else: ?>
+                    <a href="login.php?redirect=book.php" class="primary-btn"><i class="fas fa-ticket-alt"></i> Book Now</a>
+                <?php endif; ?>
                 <a href="#about" class="secondary-btn"><i class="fas fa-info-circle"></i> Learn More</a>
             </div>
         </div>
