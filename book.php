@@ -710,8 +710,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['search_trips'])) {
                     <li><a href="index.php#about">About Us</a></li>
                     <li><a href="index.php#contact">Contact</a></li>
                     <?php if(isset($_SESSION['user_id'])): ?>
-                        <li><a href="dashboard.php">Dashboard</a></li>
-                        <li><a href="logout.php" class="nav-btn">Log Out</a></li>
+                        <li><a href="passenger_dash.php">Dashboard</a></li>
+                        <li><a href="index.php" class="nav-btn">Log Out</a></li>
                     <?php else: ?>
                         <li><a href="login.php" class="nav-btn">Log In</a></li>
                     <?php endif; ?>

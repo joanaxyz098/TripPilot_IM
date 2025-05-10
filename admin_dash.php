@@ -230,7 +230,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <a href="admin_dash.php">Dashboard</a>
             <a href="manage_buses.php">Manage Buses</a>
             <a href="manage_routes.php">Manage Routes</a>
-            <a href="logout.php">Logout</a>
+            <a href="index.php">Logout</a>
         </nav>
     </header>
 
@@ -278,7 +278,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                     
                     <div class="form-group">
-                        <label for="employee_number">Employee Number</label>
+                        <label for="employee_number">Employee </label>
                         <input type="text" id="employee_number" name="employee_number" required>
                     </div>
                     
