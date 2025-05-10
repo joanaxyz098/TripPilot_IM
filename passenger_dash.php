@@ -87,15 +87,22 @@ $bookings_result = $connection->query($booking_query);
             <div class="navbar-content">
                 <a href="index.php" class="navbar-brand"><i class="fas fa-bus"></i> Trip Pilot</a>
                 <div class="navbar-links">
-                    <a href="passenger_dash.php">Dashboard</a>
-                    <a href="passenger_dash.php">My Bookings</a>
-                    <a href="index.php">Logout</a>
-                </div>
+                <a href="passenger_dash.php">Dashboard</a>
+                <a href="passenger_dash.php#bookings">My Bookings</a>
+                <a href="book.php" style="background: #10b981; padding: 0.5rem 1rem; border-radius: 0.25rem; color: white;">Book Now</a>
+                <a href="index.php">Logout</a>
+            </div>
             </div>
         </div>
     </nav>
 
     <div class="container">
+
+    <div class="welcome-message" style="background: #e0f2fe; padding: 1.5rem; border-radius: 0.5rem; margin-top: 2rem; margin-bottom: 2rem;">
+        <h2 style="color: #0f172a; margin-bottom: 0.5rem;">Welcome to Trip Pilot!</h2>
+        <p style="color: #334155;">Easily find and book bus trips to your destination. View your bookings below or click "Book Now" to reserve a seat on an upcoming trip!</p>
+    </div>
+
     <!-- Passenger Bookings Section -->
     <h2 class="section-title">Your Bookings</h2>
     <?php if ($bookings_result->num_rows > 0): ?>

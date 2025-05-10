@@ -121,7 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: var(--admin-color);
             text-decoration: none;
             font-weight: 600;
-            padding: 0.5rem 1rem;
+            padding: 0.5rem 1.5rem;
             border-radius: 4px;
             transition: background-color 0.3s;
         }
@@ -278,7 +278,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                     
                     <div class="form-group">
-                        <label for="employee_number">Employee </label>
+                        <label for="employee_number">Employee ID Number</label>
                         <input type="text" id="employee_number" name="employee_number" required>
                     </div>
                     
