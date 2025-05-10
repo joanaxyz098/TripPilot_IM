@@ -183,10 +183,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
 <body>
     <header>
         <nav>
-            <a href="#login">Login</a>
-            <a href="#about">About Us</a>
-            <a href="#contact">Contact Us</a>
-            <a href="dashboard">Dashboard</a>
         </nav>
     </header>
 
